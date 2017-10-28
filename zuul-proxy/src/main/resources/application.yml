@@ -1,0 +1,10 @@
+zuul:
+  routes:
+    system1:
+      path: /first/**
+      url: http://127.0.0.1:8090
+    system2:
+          path: /second/**
+          url: http://127.0.0.1:8091
+server:
+  port: 8080
