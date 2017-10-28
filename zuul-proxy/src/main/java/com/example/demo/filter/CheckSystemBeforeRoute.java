@@ -2,12 +2,8 @@ package com.example.demo.filter;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,10 +14,11 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
  */
 @Component
 public class CheckSystemBeforeRoute extends ZuulFilter {
-    private final Logger logger = LoggerFactory.getLogger(CheckSystemBeforeRoute.class);
+
     private RestTemplate restTemplate = new RestTemplate();
-    @Autowired
-    private ProxyRequestHelper requestHelper;
+
+    @Value("${zuul.routes.system1.url}")
+    private String firstSystemUrl;
 
     @Override
     public String filterType() {
@@ -40,7 +37,7 @@ public class CheckSystemBeforeRoute extends ZuulFilter {
 
     @Override
     public Object run() {
-        ResponseEntity response = restTemplate.exchange("http://127.0.0.1:8090/check?value=" + RequestContext.getCurrentContext().getRequest().getParameter("value"),
+        restTemplate.exchange(firstSystemUrl+"/check?value=" + RequestContext.getCurrentContext().getRequest().getParameter("value"),
                 HttpMethod.GET,
                 null,
                 Object.class);
